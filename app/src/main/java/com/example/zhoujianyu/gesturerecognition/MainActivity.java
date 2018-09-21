@@ -55,6 +55,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,6 +75,52 @@ public class MainActivity extends AppCompatActivity {
     public int window=2;
     public int capacity_data[][][] = new int[ROW_NUM][COL_NUM][window];
     public int diff_data[][] = new int[ROW_NUM][COL_NUM];
+    public String[] gestures = {"left","right","game","camera"};
+    public int index = 0;
+    public Timer timer = new Timer();
+    public TimerTask task = new TimerTask() {
+        @Override
+        public void run() {
+            String curGesture = gestures[index];
+            if(curGesture.equals("left")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MainActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                        mLandScapeKeyboardView.setVisibility(View.INVISIBLE);
+                        mKeyboardView.setVisibility(View.VISIBLE);
+                        mKeyboardView.setImageResource(R.drawable.left);
+                    }
+                });
+            }
+            else if(curGesture.equals("right")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MainActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                        mLandScapeKeyboardView.setVisibility(View.INVISIBLE);
+                        mKeyboardView.setVisibility(View.VISIBLE);
+                        mKeyboardView.setImageResource(R.drawable.right);
+                    }
+                });
+            }
+            else if(curGesture.equals("game")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLandScapeKeyboardView.setVisibility(View.VISIBLE);
+                        mKeyboardView.setVisibility(View.INVISIBLE);
+
+                    }
+                });
+
+            }
+            else{
+                takePicture();
+            }
+            index++;if(index==4) index=0;
+        }
+    };
 
 
 
@@ -144,7 +192,8 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
         }
         init();
-        readDiffStart();
+//        readDiffStart();
+        timer.schedule(task,2000,2000);
     }
 
     public void init(){
